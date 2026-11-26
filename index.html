@@ -59,6 +59,14 @@ input,textarea{font-family:inherit}
 .kicker{font-size:10px;letter-spacing:2.5px;color:var(--accent);font-weight:800;margin-bottom:3px}
 h1{margin:0;font-size:24px;font-weight:800;letter-spacing:.3px}
 .datesub{color:var(--muted);font-size:13px;margin-top:4px}
+.weekchip{display:inline-flex;align-items:center;gap:8px;margin-top:8px;
+  background:rgba(232,163,61,.08);border:1px solid rgba(232,163,61,.3);
+  color:var(--accent);font-size:10px;font-weight:800;letter-spacing:1.5px;
+  padding:6px 10px;border-radius:999px}
+.weekchip .wcount{color:var(--muted);font-weight:700}
+.wdots{display:flex;gap:3px}
+.wdot{width:6px;height:6px;border-radius:50%;background:#2a323d}
+.wdot.on{background:var(--accent);box-shadow:0 0 6px rgba(232,163,61,.5)}
 .badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.12);
   border:1px solid rgba(34,197,94,.4);color:#4ade80;font-size:12px;font-weight:700;
   padding:6px 10px;border-radius:999px;white-space:nowrap}
@@ -294,6 +302,7 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 /* ================= CONSTANTS ================= */
 const KEY = 'gymTracker.v1';
 const PHOTO_DB = 'ironlog-photos';
+const GYM_START = '2026-11-2';   // <-- Your gym start date. Week 1 begins on this day.
 const SEED_SCHEDULE = {"0":"rest","1":"rest","2":"upperA","3":"legsCore","4":"activeRecovery","5":"upperB","6":"cardioCore"};
 
 const ICONS = {
@@ -329,6 +338,27 @@ function esc(s){
   return String(s).replace(/[&<>"']/g, c => (
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
   ));
+}
+/* Week counter: week 1 = GYM_START, day 1 = GYM_START. DST-safe via UTC math. */
+function weekInfo(dateStr){
+  const s = parseKey(GYM_START);
+  const c = parseKey(dateStr);
+  const sUTC = Date.UTC(s.getFullYear(), s.getMonth(), s.getDate());
+  const cUTC = Date.UTC(c.getFullYear(), c.getMonth(), c.getDate());
+  const diffDays = Math.round((cUTC - sUTC) / 86400000);
+  if(diffDays < 0) return null;   // before gym start
+  return { week: Math.floor(diffDays / 7) + 1, day: (diffDays % 7) + 1 };
+}
+function weekChipHTML(dateStr){
+  const wi = weekInfo(dateStr);
+  if(!wi) return '';
+  let dots = '';
+  for(let i = 1; i <= 7; i++){
+    dots += '<span class="wdot' + (i <= wi.day ? ' on' : '') + '"></span>';
+  }
+  return '<div class="weekchip"><span>WEEK ' + wi.week + '</span>'
+    + '<span class="wcount">DAY ' + wi.day + '/7</span>'
+    + '<span class="wdots">' + dots + '</span></div>';
 }
 
 /* ================= INDEXEDDB (photos) =================
@@ -545,7 +575,7 @@ let viewerItems = [];
 let viewerIndex = 0;
 let galleryUrls = [];
 let thumbUrl = null;
-let photoChoosing = false;   // true = showing "Take photo / Gallery" choice after Replace
+let photoChoosing = false;
 
 async function refreshPhotoCache(){
   try{
@@ -701,6 +731,7 @@ function todayHTML(animate){
     + '<h1>' + (info ? esc(info.name) : 'Rest Day') + '</h1>'
     + '<div class="datesub">' + dateLabel + ' · <span id="clock">' + clockStr() + '</span>'
     + (isToday ? '' : (past ? ' · past day' : ' · future day')) + '</div>'
+    + weekChipHTML(viewDate)
     + '</div>'
     + (done ? '<span class="badge">' + ICONS.check + ' Complete</span>' : '')
     + '</header>';
@@ -811,7 +842,7 @@ async function renderPhotoArea(){
   const date = viewDate;
   let blob = null;
   try{ blob = await photoGet(date); }catch(e){}
-  if(date !== viewDate) return;   // view changed while loading — don't paint stale photo
+  if(date !== viewDate) return;
   if(thumbUrl){ URL.revokeObjectURL(thumbUrl); thumbUrl = null; }
 
   const choiceHTML = function(cancel){
