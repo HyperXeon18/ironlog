@@ -163,6 +163,13 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 .photo-row button{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:800;
   border:1px solid var(--border);background:var(--surface2);color:var(--text)}
 .photo-row button.danger{color:#f87171;border-color:rgba(239,68,68,.35)}
+.photo-choice{display:flex;gap:8px}
+.photo-choice button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:16px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-weight:700;font-size:13px}
+.photo-choice button:active{border-color:var(--accent)}
+.photo-choice svg{width:22px;height:22px;color:var(--accent)}
+.photo-choice button.danger{color:#f87171;border-color:rgba(239,68,68,.35)}
 .photo-note{font-size:11px;color:var(--muted);margin:8px 0 0;line-height:1.4}
 
 /* ---- gallery ---- */
@@ -266,7 +273,8 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 <body>
 
 <input type="file" id="file-input" accept=".json,application/json" hidden>
-<input type="file" id="photo-input" accept="image/*" hidden>
+<input type="file" id="photo-camera-input" accept="image/*" capture="environment" hidden>
+<input type="file" id="photo-gallery-input" accept="image/*" hidden>
 <div class="wrap" id="app"></div>
 <div class="snackbar" id="snackbar"></div>
 
@@ -300,7 +308,8 @@ const ICONS = {
   dumbbell:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7v6M17 7v6M3 10h14M6.5 6.5v7M13.5 6.5v7"/></svg>',
   download:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5v9M6.5 9L10 12.5 13.5 9M4 15.5h12"/></svg>',
   upload:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5v-9M6.5 7L10 3.5 13.5 7M4 15.5h12"/></svg>',
-  camera:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 014.5 5h2l1.2-1.8a1 1 0 01.8-.4h3a1 1 0 01.8.4L13.5 5h2A1.5 1.5 0 0117 6.5v7A1.5 1.5 0 0115.5 15h-11A1.5 1.5 0 013 13.5v-7z"/><circle cx="10" cy="10" r="2.8"/></svg>'
+  camera:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 014.5 5h2l1.2-1.8a1 1 0 01.8-.4h3a1 1 0 01.8.4L13.5 5h2A1.5 1.5 0 0117 6.5v7A1.5 1.5 0 0115.5 15h-11A1.5 1.5 0 013 13.5v-7z"/><circle cx="10" cy="10" r="2.8"/></svg>',
+  gallery:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="15" height="12" rx="2"/><circle cx="7" cy="8.2" r="1.4"/><path d="M4.5 14.5l3.5-3.5 2.5 2.5 2-2 3 3"/></svg>'
 };
 
 /* ================= HELPERS ================= */
@@ -511,7 +520,8 @@ function mutateToday(routineId, fn){
 /* ================= UI STATE ================= */
 const app = document.getElementById('app');
 const fileInput = document.getElementById('file-input');
-const photoInput = document.getElementById('photo-input');
+const photoCameraInput = document.getElementById('photo-camera-input');
+const photoGalleryInput = document.getElementById('photo-gallery-input');
 const snackbar = document.getElementById('snackbar');
 const viewer = document.getElementById('viewer');
 const vImg = document.getElementById('v-img');
@@ -530,11 +540,12 @@ let snackTimer = null;
 let noteDebounce = null;
 let pendingScrollY = 0;
 let lastToday = todayKey();
-let photoCache = new Set();   // date keys that have a photo (for calendar dots)
+let photoCache = new Set();
 let viewerItems = [];
 let viewerIndex = 0;
 let galleryUrls = [];
 let thumbUrl = null;
+let photoChoosing = false;   // true = showing "Take photo / Gallery" choice after Replace
 
 async function refreshPhotoCache(){
   try{
@@ -544,6 +555,7 @@ async function refreshPhotoCache(){
 }
 
 function render(animate){
+  photoChoosing = false;
   pendingScrollY = window.scrollY;
   app.innerHTML = view === 'today' ? todayHTML(animate)
                 : view === 'progress' ? photosHTML(animate)
@@ -801,28 +813,48 @@ async function renderPhotoArea(){
   try{ blob = await photoGet(date); }catch(e){}
   if(date !== viewDate) return;   // view changed while loading — don't paint stale photo
   if(thumbUrl){ URL.revokeObjectURL(thumbUrl); thumbUrl = null; }
+
+  const choiceHTML = function(cancel){
+    return '<div class="photo-choice">'
+      + '<button id="ph-take">' + ICONS.camera + ' Take photo</button>'
+      + '<button id="ph-pick">' + ICONS.gallery + ' Gallery</button>'
+      + (cancel ? '<button id="ph-cancel" class="danger">Cancel</button>' : '')
+      + '</div>';
+  };
+  const bindChoice = function(){
+    document.getElementById('ph-take').addEventListener('click', function(){ photoCameraInput.click(); });
+    document.getElementById('ph-pick').addEventListener('click', function(){ photoGalleryInput.click(); });
+    const c = document.getElementById('ph-cancel');
+    if(c) c.addEventListener('click', function(){ photoChoosing = false; renderPhotoArea(); });
+  };
+
   if(blob){
     thumbUrl = URL.createObjectURL(blob);
-    area.innerHTML = '<img class="photo-thumb" src="' + thumbUrl + '" alt="Progress photo for ' + date + '">'
-      + '<div class="photo-row">'
-      + '<button id="ph-view">View</button>'
-      + '<button id="ph-replace">Replace</button>'
-      + '<button id="ph-delete" class="danger">Delete</button>'
-      + '</div>';
-    document.getElementById('ph-view').addEventListener('click', function(){ openViewer(date); });
-    document.getElementById('ph-replace').addEventListener('click', function(){ photoInput.click(); });
-    document.getElementById('ph-delete').addEventListener('click', function(){
-      if(confirm('Delete the photo for ' + date + '?')){
-        photoDel(date).then(function(){
-          return refreshPhotoCache();
-        }).then(function(){
-          render(false);
-        }).catch(function(){});
-      }
-    });
+    area.innerHTML = '<img class="photo-thumb" src="' + thumbUrl + '" alt="Progress photo for ' + date + '">';
+    if(photoChoosing){
+      area.innerHTML += choiceHTML(true);
+      bindChoice();
+    }else{
+      area.innerHTML += '<div class="photo-row">'
+        + '<button id="ph-view">View</button>'
+        + '<button id="ph-replace">Replace</button>'
+        + '<button id="ph-delete" class="danger">Delete</button>'
+        + '</div>';
+      document.getElementById('ph-view').addEventListener('click', function(){ openViewer(date); });
+      document.getElementById('ph-replace').addEventListener('click', function(){ photoChoosing = true; renderPhotoArea(); });
+      document.getElementById('ph-delete').addEventListener('click', function(){
+        if(confirm('Delete the photo for ' + date + '?')){
+          photoDel(date).then(function(){
+            return refreshPhotoCache();
+          }).then(function(){
+            render(false);
+          }).catch(function(){});
+        }
+      });
+    }
   }else{
-    area.innerHTML = '<button class="photo-btn" id="ph-add">' + ICONS.camera + ' Add photo</button>';
-    document.getElementById('ph-add').addEventListener('click', function(){ photoInput.click(); });
+    area.innerHTML = choiceHTML(false);
+    bindChoice();
   }
 }
 async function renderGallery(){
@@ -835,7 +867,7 @@ async function renderGallery(){
   all.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
   if(!all.length){
     grid.innerHTML = '<div class="empty-state">' + ICONS.camera
-      + '<br>No photos yet.<br>Open a day and tap "Add photo".</div>';
+      + '<br>No photos yet.<br>Open a day and tap "Take photo" or "Gallery".</div>';
     return;
   }
   let h = '';
@@ -1109,9 +1141,9 @@ fileInput.addEventListener('change', function(){
   };
   reader.readAsText(f);
 });
-photoInput.addEventListener('change', function(){
-  const f = photoInput.files && photoInput.files[0];
-  photoInput.value = '';
+function handlePhotoPicked(input){
+  const f = input.files && input.files[0];
+  input.value = '';
   if(!f) return;
   fileToResizedBlob(f).then(async function(blob){
     try{
@@ -1123,7 +1155,9 @@ photoInput.addEventListener('change', function(){
       showSnackbar('Could not save photo.');
     }
   });
-});
+}
+photoCameraInput.addEventListener('change', function(){ handlePhotoPicked(photoCameraInput); });
+photoGalleryInput.addEventListener('change', function(){ handlePhotoPicked(photoGalleryInput); });
 
 /* ================= TIME MACHINERY ================= */
 function dateRolloverCheck(){
