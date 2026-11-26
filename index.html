@@ -43,8 +43,8 @@ input,textarea{font-family:inherit}
 /* ---- tabs ---- */
 .tabs{display:flex;background:var(--surface);border:1px solid var(--border);
   border-radius:14px;padding:4px;gap:4px;margin-bottom:16px}
-.tab{flex:1;padding:11px;border:0;border-radius:10px;background:transparent;
-  color:var(--muted);font-weight:700;font-size:14px;letter-spacing:.5px;
+.tab{flex:1;padding:11px 4px;border:0;border-radius:10px;background:transparent;
+  color:var(--muted);font-weight:700;font-size:13px;letter-spacing:.5px;
   transition:background .18s,color .18s}
 .tab.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1204}
 
@@ -64,7 +64,7 @@ h1{margin:0;font-size:24px;font-weight:800;letter-spacing:.3px}
   padding:6px 10px;border-radius:999px;white-space:nowrap}
 .badge svg{width:13px;height:13px}
 
-/* ---- progress ---- */
+/* ---- progress bar ---- */
 .prog{margin-bottom:14px}
 .prog-track{height:8px;background:var(--surface2);border-radius:999px;overflow:hidden}
 .prog-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));
@@ -151,6 +151,45 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 .rest-title{font-size:20px;font-weight:800}
 .rest-sub{color:var(--muted);margin-top:6px;font-size:14px}
 
+/* ---- photo card ---- */
+.photo-area{display:flex;flex-direction:column;gap:10px}
+.photo-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:var(--surface2);border:1.5px dashed #39424f;color:var(--muted);
+  border-radius:12px;padding:14px;font-weight:700;font-size:14px}
+.photo-btn svg{width:18px;height:18px}
+.photo-thumb{width:100%;border-radius:12px;display:block;max-height:360px;
+  object-fit:cover;border:1px solid var(--border);background:#000}
+.photo-row{display:flex;gap:8px}
+.photo-row button{flex:1;padding:11px;border-radius:10px;font-size:13px;font-weight:800;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text)}
+.photo-row button.danger{color:#f87171;border-color:rgba(239,68,68,.35)}
+.photo-note{font-size:11px;color:var(--muted);margin:8px 0 0;line-height:1.4}
+
+/* ---- gallery ---- */
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pcell{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;transition:transform .12s}
+.pcell:active{transform:scale(.97)}
+.pcell img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:#000}
+.pcell .pdate{padding:8px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+.empty-state{grid-column:1/-1;text-align:center;color:var(--muted);padding:34px 16px;
+  font-size:14px;line-height:1.7}
+.empty-state svg{width:36px;height:36px;opacity:.5;margin-bottom:10px}
+
+/* ---- fullscreen viewer ---- */
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:60;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  padding:16px}
+.viewer[hidden]{display:none}
+.viewer img{max-width:100%;max-height:72vh;object-fit:contain}
+.v-close{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;
+  width:44px;height:44px;border-radius:12px;border:1px solid #333a45;
+  background:#161b23;color:#fff;font-size:16px}
+.v-nav{display:flex;align-items:center;gap:16px;margin-top:16px}
+.v-nav button{width:48px;height:48px;border-radius:12px;border:1px solid #333a45;
+  background:#161b23;color:#fff;font-size:20px}
+#v-count{font-size:13px;color:#8a94a6;font-weight:700;text-align:center;line-height:1.4}
+
 /* ---- footer / done ---- */
 .footer{position:sticky;bottom:0;margin-top:12px;
   padding:12px 0 calc(14px + env(safe-area-inset-bottom));
@@ -175,7 +214,7 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}
 .dow{text-align:center;font-size:10px;font-weight:800;letter-spacing:1.5px;
   color:var(--muted);padding-bottom:2px}
-.cell{aspect-ratio:1;border-radius:12px;background:var(--surface);
+.cell{position:relative;aspect-ratio:1;border-radius:12px;background:var(--surface);
   border:2px solid transparent;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:1px;min-width:0;
   transition:transform .12s,background .18s,border-color .18s}
@@ -184,6 +223,8 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 .c-day{font-size:13px;font-weight:700}
 .c-label{font-size:7.5px;font-weight:800;letter-spacing:.4px;max-width:100%;
   overflow:hidden;white-space:nowrap}
+.c-photo{position:absolute;top:4px;right:4px;width:5px;height:5px;
+  border-radius:50%;background:var(--accent)}
 .cell.st-complete{background:rgba(34,197,94,.16);color:#4ade80}
 .cell.st-inprogress{background:rgba(234,179,8,.16);color:#facc15}
 .cell.st-missed{background:rgba(239,68,68,.16);color:#f87171}
@@ -197,6 +238,7 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 .lg-red{background:rgba(239,68,68,.6)}
 .lg-indigo{background:rgba(129,140,248,.5)}
 .lg-grey{background:#39424f}
+.lg-accent{background:var(--accent)}
 
 /* ---- snackbar ---- */
 .snackbar{position:fixed;left:50%;bottom:118px;transform:translate(-50%,20px);
@@ -224,14 +266,26 @@ textarea.p-note{min-height:74px;resize:vertical;font-size:14px}
 <body>
 
 <input type="file" id="file-input" accept=".json,application/json" hidden>
+<input type="file" id="photo-input" accept="image/*" hidden>
 <div class="wrap" id="app"></div>
 <div class="snackbar" id="snackbar"></div>
+
+<div class="viewer" id="viewer" hidden>
+  <button class="v-close" id="v-close" aria-label="Close">✕</button>
+  <img id="v-img" alt="Progress photo">
+  <div class="v-nav">
+    <button id="v-prev" aria-label="Previous">‹</button>
+    <span id="v-count"></span>
+    <button id="v-next" aria-label="Next">›</button>
+  </div>
+</div>
 
 <script>
 'use strict';
 
 /* ================= CONSTANTS ================= */
 const KEY = 'gymTracker.v1';
+const PHOTO_DB = 'ironlog-photos';
 const SEED_SCHEDULE = {"0":"rest","1":"rest","2":"upperA","3":"legsCore","4":"activeRecovery","5":"upperB","6":"cardioCore"};
 
 const ICONS = {
@@ -245,13 +299,14 @@ const ICONS = {
   moon:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11.5A7.5 7.5 0 118.5 3a6 6 0 008.5 8.5z"/></svg>',
   dumbbell:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7v6M17 7v6M3 10h14M6.5 6.5v7M13.5 6.5v7"/></svg>',
   download:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5v9M6.5 9L10 12.5 13.5 9M4 15.5h12"/></svg>',
-  upload:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5v-9M6.5 7L10 3.5 13.5 7M4 15.5h12"/></svg>'
+  upload:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5v-9M6.5 7L10 3.5 13.5 7M4 15.5h12"/></svg>',
+  camera:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 014.5 5h2l1.2-1.8a1 1 0 01.8-.4h3a1 1 0 01.8.4L13.5 5h2A1.5 1.5 0 0117 6.5v7A1.5 1.5 0 0115.5 15h-11A1.5 1.5 0 013 13.5v-7z"/><circle cx="10" cy="10" r="2.8"/></svg>'
 };
 
 /* ================= HELPERS ================= */
-/* Local-date key: built from getFullYear/getMonth/getDate — NEVER toISOString()
-   (toISOString is UTC and would attribute early-morning workouts to yesterday). */
 function pad2(n){ return (n < 10 ? '0' : '') + n; }
+/* Local-date key: built from getFullYear/getMonth/getDate — NEVER toISOString()
+   (UTC would attribute early-morning workouts to yesterday). */
 function dateKey(d){ return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()); }
 function parseKey(k){ const p = k.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
 function todayKey(){ return dateKey(new Date()); }
@@ -265,6 +320,68 @@ function esc(s){
   return String(s).replace(/[&<>"']/g, c => (
     {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
   ));
+}
+
+/* ================= INDEXEDDB (photos) =================
+   Photos are stored as BLOBS in IndexedDB, keyed by local date string.
+   localStorage would hit its ~5MB quota after 2–3 photos. */
+function idbReq(r){ return new Promise(function(res, rej){ r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); }; }); }
+function photoDB(){
+  return new Promise(function(res, rej){
+    const req = indexedDB.open(PHOTO_DB, 1);
+    req.onupgradeneeded = function(e){
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains('photos')) d.createObjectStore('photos');
+    };
+    req.onsuccess = function(e){ res(e.target.result); };
+    req.onerror = function(){ rej(req.error); };
+  });
+}
+async function photoPut(dateStr, blob){
+  const db = await photoDB();
+  await idbReq(db.transaction('photos','readwrite').objectStore('photos').put(blob, dateStr));
+}
+async function photoGet(dateStr){
+  const db = await photoDB();
+  return idbReq(db.transaction('photos').objectStore('photos').get(dateStr));
+}
+async function photoDel(dateStr){
+  const db = await photoDB();
+  await idbReq(db.transaction('photos','readwrite').objectStore('photos').delete(dateStr));
+}
+function photoAll(){
+  return new Promise(async function(res, rej){
+    try{
+      const db = await photoDB();
+      const store = db.transaction('photos').objectStore('photos');
+      const out = [];
+      const cur = store.openCursor();
+      cur.onsuccess = function(e){
+        const c = e.target.result;
+        if(c){ out.push({ date: c.key, blob: c.value }); c.continue(); }
+        else res(out);
+      };
+      cur.onerror = function(){ rej(cur.error); };
+    }catch(e){ rej(e); }
+  });
+}
+/* Downscale to max 900px and re-encode as JPEG (~100–300KB each). */
+function fileToResizedBlob(file){
+  return new Promise(function(resolve){
+    if(window.createImageBitmap){
+      createImageBitmap(file, { imageOrientation: 'from-image' }).then(function(bmp){
+        const scale = Math.min(1, 900 / Math.max(bmp.width, bmp.height));
+        const w = Math.max(1, Math.round(bmp.width * scale));
+        const h = Math.max(1, Math.round(bmp.height * scale));
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+        c.toBlob(function(b){ resolve(b || file); }, 'image/jpeg', 0.78);
+      }).catch(function(){ resolve(file); });
+    }else{
+      resolve(file);
+    }
+  });
 }
 
 /* ================= SEED DATA ================= */
@@ -329,7 +446,7 @@ function load(){
       const p = JSON.parse(raw);
       if(p && p.settings && p.routines && p.sessions) return p;
     }
-  }catch(e){ /* corrupt or blocked storage — fall through to seed */ }
+  }catch(e){}
   return seed();
 }
 function save(){
@@ -342,7 +459,6 @@ function routineFor(dateStr){
   const d = parseKey(dateStr);
   return db.settings.schedule[String(d.getDay())] || 'rest';
 }
-/* Version resolution: newest effectiveFrom <= dateStr (string compare is safe for YYYY-MM-DD). */
 function versionFor(routineId, dateStr){
   const rt = db.routines[routineId];
   if(!rt || !rt.versions) return null;
@@ -363,7 +479,6 @@ function ensureSession(dateStr){
   }
   return s;
 }
-/* Calendar state is DERIVED, never stored. */
 function dayState(dateStr){
   const r = routineFor(dateStr);
   if(r === 'rest') return { state:'rest', routineId:null, total:0, done:0 };
@@ -376,8 +491,6 @@ function dayState(dateStr){
   if(dateStr < todayKey()) return { state:'missed', routineId:r, total:exs.length, done:checkedCount };
   return { state:'scheduled', routineId:r, total:exs.length, done:checkedCount };
 }
-/* Every edit writes a NEW version effective today (or overwrites today's version).
-   Past dates keep their old version forever — this is forward-only editing. */
 function mutateToday(routineId, fn){
   const rt = db.routines[routineId];
   if(!rt || !rt.versions) return;
@@ -398,21 +511,43 @@ function mutateToday(routineId, fn){
 /* ================= UI STATE ================= */
 const app = document.getElementById('app');
 const fileInput = document.getElementById('file-input');
+const photoInput = document.getElementById('photo-input');
 const snackbar = document.getElementById('snackbar');
+const viewer = document.getElementById('viewer');
+const vImg = document.getElementById('v-img');
+const vClose = document.getElementById('v-close');
+const vPrev = document.getElementById('v-prev');
+const vNext = document.getElementById('v-next');
+const vCount = document.getElementById('v-count');
+
 let view = 'today';
 let viewDate = todayKey();
 let calMonth = (function(){ const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })();
-let editRow = null;     // exercise id being edited, or '__new__' for add mode
-let noteRow = null;     // exercise id whose note is being edited
-let undoSnap = null;    // { routineId, exercises } for delete undo
+let editRow = null;
+let noteRow = null;
+let undoSnap = null;
 let snackTimer = null;
 let noteDebounce = null;
 let pendingScrollY = 0;
 let lastToday = todayKey();
+let photoCache = new Set();   // date keys that have a photo (for calendar dots)
+let viewerItems = [];
+let viewerIndex = 0;
+let galleryUrls = [];
+let thumbUrl = null;
+
+async function refreshPhotoCache(){
+  try{
+    const all = await photoAll();
+    photoCache = new Set(all.map(function(x){ return x.date; }));
+  }catch(e){}
+}
 
 function render(animate){
   pendingScrollY = window.scrollY;
-  app.innerHTML = view === 'today' ? todayHTML(animate) : calHTML(animate);
+  app.innerHTML = view === 'today' ? todayHTML(animate)
+                : view === 'progress' ? photosHTML(animate)
+                : calHTML(animate);
   afterRender();
 }
 function afterRender(){
@@ -434,6 +569,8 @@ function afterRender(){
   }
   const clk = document.getElementById('clock');
   if(clk) clk.textContent = clockStr();
+  if(view === 'today') renderPhotoArea();
+  if(view === 'progress') renderGallery();
   window.scrollTo(0, pendingScrollY);
 }
 
@@ -445,6 +582,7 @@ function appbarHTML(){
 function tabsHTML(){
   return '<div class="tabs">'
     + '<button class="tab' + (view==='today'?' on':'') + '" data-act="tab-today">Today</button>'
+    + '<button class="tab' + (view==='progress'?' on':'') + '" data-act="tab-progress">Progress</button>'
     + '<button class="tab' + (view==='calendar'?' on':'') + '" data-act="tab-cal">Calendar</button>'
     + '</div>';
 }
@@ -525,6 +663,11 @@ function dayNoteCard(sess){
   return '<div class="card daynotes"><div class="card-title">' + ICONS.note + ' Notes for today</div>'
     + '<textarea data-daynote placeholder="How did today feel?">' + esc(sess ? sess.dayNote : '') + '</textarea></div>';
 }
+function photoCardHTML(){
+  return '<div class="card photocard"><div class="card-title">' + ICONS.camera + ' Progress photo</div>'
+    + '<div class="photo-area" id="photo-area">Loading…</div>'
+    + '<p class="photo-note">Photos are stored on this device only — back them up separately.</p></div>';
+}
 function todayHTML(animate){
   const isToday = viewDate === todayKey();
   const d = parseKey(viewDate);
@@ -568,6 +711,7 @@ function todayHTML(animate){
       h += '<button class="addbtn" data-act="add">' + ICONS.plus + ' Add exercise</button>';
     }
     h += dayNoteCard(sess);
+    h += photoCardHTML();
     if(exs.length){
       const all = checkedCount === exs.length;
       h += '<div class="footer"><button class="donebtn' + (done ? ' finished' : '') + '" data-act="done">'
@@ -579,9 +723,20 @@ function todayHTML(animate){
       + '<div class="rest-title">Rest Day</div>'
       + '<div class="rest-sub">Recovery is part of the program.</div></div>';
     h += dayNoteCard(sess);
+    h += photoCardHTML();
   }
   h += '</div>';
   return h;
+}
+function photosHTML(animate){
+  return appbarHTML() + tabsHTML()
+    + '<div class="view' + (animate ? ' anim' : '') + '">'
+    + '<header class="day-head"><div>'
+    + '<div class="kicker">GALLERY</div><h1>Body Progress</h1>'
+    + '<div class="datesub">Photos stored on this device</div>'
+    + '</div></header>'
+    + '<div id="pgrid" class="pgrid"><div class="empty-state">Loading photos…</div></div>'
+    + '</div>';
 }
 function shiftMonth(delta){
   calMonth.m += delta;
@@ -591,7 +746,7 @@ function shiftMonth(delta){
 function calHTML(animate){
   const y = calMonth.y, m = calMonth.m;
   const title = new Date(y, m, 1).toLocaleDateString(undefined, {month:'long', year:'numeric'});
-  const offset = (new Date(y, m, 1).getDay() + 6) % 7;   // Monday-first grid
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7;
   const days = new Date(y, m+1, 0).getDate();
   const t = todayKey();
   let cells = '';
@@ -605,7 +760,9 @@ function calHTML(animate){
     else if(st.state === 'missed') label = '!';
     else if(st.state === 'scheduled'){ const rt = db.routines[st.routineId]; label = rt ? rt.short : ''; }
     cells += '<div class="cell st-' + st.state + (ds === t ? ' today' : '') + '" data-date="' + ds + '">'
-      + '<span class="c-day">' + dd + '</span><span class="c-label">' + label + '</span></div>';
+      + '<span class="c-day">' + dd + '</span><span class="c-label">' + label + '</span>'
+      + (photoCache.has(ds) ? '<span class="c-photo"></span>' : '')
+      + '</div>';
   }
   return appbarHTML() + tabsHTML()
     + '<div class="view' + (animate ? ' anim' : '') + '">'
@@ -624,15 +781,118 @@ function calHTML(animate){
     + '<div class="legend-row"><span class="lg lg-red"></span>Missed — not finished</div>'
     + '<div class="legend-row"><span class="lg lg-indigo"></span>Scheduled</div>'
     + '<div class="legend-row"><span class="lg lg-grey"></span>Rest</div>'
+    + '<div class="legend-row"><span class="lg lg-accent"></span>Photo taken</div>'
     + '</div>'
     + '<div class="card backup"><div class="card-title">Backup</div>'
-    + '<p>Your data lives only in this browser. Download a backup and store it somewhere safe.</p>'
+    + '<p>Your workout data lives only in this browser. Download a backup and store it somewhere safe. Progress photos are stored separately on this device and are not included in the JSON backup.</p>'
     + '<button class="secbtn" data-act="export">' + ICONS.download + ' Export backup (.json)</button>'
     + '<button class="secbtn" data-act="import">' + ICONS.upload + ' Import backup</button>'
     + '</div>'
     + '<p class="tip muted">Tap a day to open it.</p>'
     + '</div>';
 }
+
+/* ================= PHOTO AREA + GALLERY ================= */
+async function renderPhotoArea(){
+  const area = document.getElementById('photo-area');
+  if(!area) return;
+  const date = viewDate;
+  let blob = null;
+  try{ blob = await photoGet(date); }catch(e){}
+  if(date !== viewDate) return;   // view changed while loading — don't paint stale photo
+  if(thumbUrl){ URL.revokeObjectURL(thumbUrl); thumbUrl = null; }
+  if(blob){
+    thumbUrl = URL.createObjectURL(blob);
+    area.innerHTML = '<img class="photo-thumb" src="' + thumbUrl + '" alt="Progress photo for ' + date + '">'
+      + '<div class="photo-row">'
+      + '<button id="ph-view">View</button>'
+      + '<button id="ph-replace">Replace</button>'
+      + '<button id="ph-delete" class="danger">Delete</button>'
+      + '</div>';
+    document.getElementById('ph-view').addEventListener('click', function(){ openViewer(date); });
+    document.getElementById('ph-replace').addEventListener('click', function(){ photoInput.click(); });
+    document.getElementById('ph-delete').addEventListener('click', function(){
+      if(confirm('Delete the photo for ' + date + '?')){
+        photoDel(date).then(function(){
+          return refreshPhotoCache();
+        }).then(function(){
+          render(false);
+        }).catch(function(){});
+      }
+    });
+  }else{
+    area.innerHTML = '<button class="photo-btn" id="ph-add">' + ICONS.camera + ' Add photo</button>';
+    document.getElementById('ph-add').addEventListener('click', function(){ photoInput.click(); });
+  }
+}
+async function renderGallery(){
+  const grid = document.getElementById('pgrid');
+  if(!grid) return;
+  galleryUrls.forEach(function(u){ URL.revokeObjectURL(u); });
+  galleryUrls = [];
+  let all = [];
+  try{ all = await photoAll(); }catch(e){}
+  all.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  if(!all.length){
+    grid.innerHTML = '<div class="empty-state">' + ICONS.camera
+      + '<br>No photos yet.<br>Open a day and tap "Add photo".</div>';
+    return;
+  }
+  let h = '';
+  all.forEach(function(item){
+    const d = parseKey(item.date);
+    const label = d.toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short'});
+    const url = URL.createObjectURL(item.blob);
+    galleryUrls.push(url);
+    h += '<div class="pcell" data-phdate="' + item.date + '">'
+      + '<img src="' + url + '" alt="Progress photo ' + item.date + '">'
+      + '<div class="pdate">' + label + '</div></div>';
+  });
+  grid.innerHTML = h;
+}
+
+/* ================= FULLSCREEN VIEWER ================= */
+async function openViewer(date){
+  let all = [];
+  try{ all = await photoAll(); }catch(e){}
+  all.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  if(!all.length){ showSnackbar('No photos found.'); return; }
+  viewerItems = all.map(function(x){
+    return { date: x.date, url: URL.createObjectURL(x.blob) };
+  });
+  let idx = viewerItems.findIndex(function(x){ return x.date === date; });
+  viewerIndex = idx < 0 ? 0 : idx;
+  updateViewer();
+  viewer.hidden = false;
+}
+function updateViewer(){
+  const item = viewerItems[viewerIndex];
+  if(!item) return;
+  vImg.src = item.url;
+  const d = parseKey(item.date);
+  vCount.textContent = (viewerIndex + 1) + ' / ' + viewerItems.length + ' · '
+    + d.toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'});
+}
+function closeViewer(){
+  viewer.hidden = true;
+  viewerItems.forEach(function(x){ URL.revokeObjectURL(x.url); });
+  viewerItems = [];
+  vImg.src = '';
+}
+vClose.addEventListener('click', closeViewer);
+vPrev.addEventListener('click', function(){
+  if(viewerItems.length){ viewerIndex = (viewerIndex - 1 + viewerItems.length) % viewerItems.length; updateViewer(); }
+});
+vNext.addEventListener('click', function(){
+  if(viewerItems.length){ viewerIndex = (viewerIndex + 1) % viewerItems.length; updateViewer(); }
+});
+viewer.addEventListener('click', function(ev){ if(ev.target === viewer) closeViewer(); });
+document.addEventListener('keydown', function(ev){
+  if(viewer.hidden) return;
+  if(ev.key === 'Escape') closeViewer();
+  else if(ev.key === 'ArrowLeft') vPrev.click();
+  else if(ev.key === 'ArrowRight') vNext.click();
+});
 
 /* ================= HANDLERS ================= */
 function onToggle(exId){
@@ -764,6 +1024,7 @@ app.addEventListener('click', function(ev){
     const li = btn.closest('li');
     switch(act){
       case 'tab-today': view = 'today'; render(true); break;
+      case 'tab-progress': view = 'progress'; render(true); break;
       case 'tab-cal': {
         view = 'calendar';
         const d0 = parseKey(viewDate);
@@ -789,6 +1050,8 @@ app.addEventListener('click', function(ev){
     }
     return;
   }
+  const pc = ev.target.closest('.pcell[data-phdate]');
+  if(pc){ openViewer(pc.dataset.phdate); return; }
   const cell = ev.target.closest('.cell[data-date]');
   if(cell){
     viewDate = cell.dataset.date;
@@ -835,7 +1098,7 @@ fileInput.addEventListener('change', function(){
           viewDate = todayKey();
           view = 'today';
           render(true);
-          showSnackbar('Backup restored.');
+          showSnackbar('Backup restored. Photos are not included.');
         }
       }else{
         showSnackbar('Not a valid IRONLOG backup.');
@@ -846,11 +1109,23 @@ fileInput.addEventListener('change', function(){
   };
   reader.readAsText(f);
 });
+photoInput.addEventListener('change', function(){
+  const f = photoInput.files && photoInput.files[0];
+  photoInput.value = '';
+  if(!f) return;
+  fileToResizedBlob(f).then(async function(blob){
+    try{
+      await photoPut(viewDate, blob);
+      await refreshPhotoCache();
+      render(false);
+      showSnackbar('Photo saved for ' + viewDate + '.');
+    }catch(e){
+      showSnackbar('Could not save photo.');
+    }
+  });
+});
 
 /* ================= TIME MACHINERY ================= */
-/* Recompute the date on every render and on visibility/focus changes, and
-   schedule a wake-up just after the next local midnight so a tab left open
-   overnight rolls over and yesterday's partial day turns red. */
 function dateRolloverCheck(){
   const t = todayKey();
   if(t === lastToday) return;
@@ -871,7 +1146,11 @@ setInterval(function(){
 }, 20000);
 scheduleMidnight();
 
+/* Boot: render, then load photo cache (for calendar dots) and repaint if needed. */
 render(true);
+refreshPhotoCache().then(function(){
+  if(view === 'calendar') render(false);
+});
 </script>
 </body>
 </html>
